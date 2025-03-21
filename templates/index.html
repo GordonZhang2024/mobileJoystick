@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>
+			Mobile Joystick
+		</title>
+	</head>
+	<body>
+		<h1>Mobile Joystick</h1>
+		Copyright (c) 2025 Gordon Zhang
+		Licensed under ...
+		<script>
+			var sendOrientation = function (a, b, g) {
+				dataURL = `/data/${a}/${b}/${g}`;
+				fetch(dataURL);
+			};
+
+			window.addEventListener("deviceorientation", (event) => {
+				const alpha = event.alpha; // Rotation around the z-axis (0 to 360 degrees)
+				const beta = event.beta;  // Rotation around the x-axis (-180 to 180 degrees)
+				const gamma = event.gamma; // Rotation around the y-axis (-90 to 90 degrees)
+				
+				sendOrientation(alpha, beta, gamma)
+			});
+		</script>
+	</body>
+</html>

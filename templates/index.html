@@ -11,18 +11,37 @@
 		Copyright (c) 2025 Gordon Zhang
 		Licensed under GNU GPL v3
 		<script>
-			var sendOrientation = function (a, b, g) {
-				dataURL = `/data/${a}/${b}/${g}`;
-				fetch(dataURL);
+		function throttle(func, limit) {
+			let lastFunc;
+			let lastRan;
+			return function(...args) {
+				if (!lastRan) {
+					func.apply(this, args);
+					lastRan = Date.now();
+				} else {
+					clearTimeout(lastFunc);
+					lastFunc = setTimeout(() => {
+						if ((Date.now() - lastRan) >= limit) {
+							func.apply(this, args);
+							lastRan = Date.now();
+						}
+					}, limit - (Date.now() - lastRan));
+				}
 			};
+		}
 
-			window.addEventListener("deviceorientation", (event) => {
-				const alpha = event.alpha; // Rotation around the z-axis (0 to 360 degrees)
-				const beta = event.beta;  // Rotation around the x-axis (-180 to 180 degrees)
-				const gamma = event.gamma; // Rotation around the y-axis (-90 to 90 degrees)
-				
-				sendOrientation(alpha, beta, gamma)
-			});
+		var sendOrientation = throttle(function(a, b, g) {
+			dataURL = `/data/${a}/${b}/${g}`;
+			fetch(dataURL);
+		}, 200); // Limit to once every 200ms
+
+		window.addEventListener("deviceorientation", (event) => {
+			const alpha = event.alpha;
+			const beta = event.beta;
+			const gamma = event.gamma;
+			
+			sendOrientation(alpha, beta, gamma);
+		});
 		</script>
 	</body>
 </html>

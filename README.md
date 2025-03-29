@@ -1,5 +1,5 @@
 # FlightGear mobileJoystick
-... in development, not usable yet
+**... in development, not usable yet**
 
 ## Install
 requirements: python, python-pip
@@ -11,3 +11,7 @@ Start FlightGear with `--native-ctrls=socket,out,30,localhost,5503,udp --native-
 ```bash
 $ ./app.py
 ```
+
+## Contact
+- Email: GordonZhang11@outlook.com
+- FlightGear Forum: GZhang

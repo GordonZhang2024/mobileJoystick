@@ -1,4 +1,22 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+
+"""
+MobileJoystick | mobile FG controller
+Copyright (C) 2025 Gordon Zhang
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 
 from flask import Flask, render_template
 from flask_cors import CORS
@@ -16,8 +34,8 @@ currentOrientation = (0, 0, 0)
 
 
 """
-    first Data: used by function data()
-    first group of orientation data will be set as neutral position
+first Data: used by function data()
+first group of orientation data will be set as neutral position
 """
 firstData = True
 
@@ -36,36 +54,42 @@ def data(a, b, g):
         firstData = False
     currentOrientation = [a, b, g]
     global ctrlsEventPipe
-    difference = currentOrientation[0] - neutralOrientation[0]
-    
-    # Normalize the difference to the range of -180 to 180 degrees
-    difference = (difference + 180) % 360 - 180
-    
-    if -90 <= difference <= 90:
-        control_value = difference / 90.0  # Scale to -1 to 1
-    else:
-        # Clamp to -1 or 1 if outside ±90 degrees
-        control_value = -1 if difference < -90 else 1
-    
-    print(control_value)
-    control = [control_value, 0, 0]
-    ctrlsEventPipe.parent_send(control)
+
+    controls = []
+    for i in range(3):  # Process all three axes
+        difference = currentOrientation[i] - neutralOrientation[i]
+
+        # Normalize the difference to the range of -180 to 180 degrees
+        difference = (difference + 180) % 360 - 180
+
+        if -90 <= difference <= 90:
+            controlValue = difference / 90.0  # Scale to -1 to 1
+        else:
+            # Clamp to -1 or 1 if outside ±90 degrees
+            controlValue = -1 if difference < -90 else 1
+
+        controls.append(controlValue)
+
+    print(controls)
+    ctrlsEventPipe.parent_send(controls)
     return ' '
 
 
 
 def ctrlSend(ctrlsData, eventPipe):
     if eventPipe.child_poll():
-        orientation = eventPipe.child_recv()
+        ctrl = eventPipe.child_recv()
     else:
-        orientation = (0, 0, 0)
+        ctrl = (0, 0, 0)
 
     print()
     print(neutralOrientation)
-    print(orientation)
-    print(orientation[0])
+    print(ctrl)
+    print(ctrl[0])
     print()
-    ctrlsData.aileron = orientation[0]
+    ctrlsData.aileron  = ctrl[0]
+    ctrlsData.elevator = ctrl[1]
+    ctrlsData.rudder   = ctrl[2]
 
     return ctrlsData
 

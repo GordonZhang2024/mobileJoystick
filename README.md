@@ -11,7 +11,7 @@ Start FlightGear with `--native-ctrls=socket,out,30,localhost,5503,udp --native-
 ```bash
 $ ./app.py
 ```
-Visit <computer's ip>:5000 with the web browser on mobile devices.
+Visit `<computer's ip>:5000` with the web browser on mobile devices.
 
 ## Contact
 - Email: GordonZhang11@outlook.com

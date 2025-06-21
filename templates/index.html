@@ -33,7 +33,7 @@
 		var sendOrientation = throttle(function(a, b, g) {
 			dataURL = `/data/${a}/${b}/${g}`;
 			fetch(dataURL);
-		}, 200); // Limit to once every 200ms
+		}, 50); // Limit to once every 200ms
 
 		window.addEventListener("deviceorientation", (event) => {
 			const alpha = event.alpha;

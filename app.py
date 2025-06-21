@@ -21,6 +21,9 @@ currentOrientation = (0, 0, 0)
 """
 firstData = True
 
+
+previousCtrl = []
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -36,36 +39,61 @@ def data(a, b, g):
         firstData = False
     currentOrientation = [a, b, g]
     global ctrlsEventPipe
-    difference = currentOrientation[0] - neutralOrientation[0]
-    
+    global previousCtrl
+
+
+
+    aileron = 0
+    elevator = 0
+
+    differenceA = -(currentOrientation[0] - neutralOrientation[0])
+    # differenceB = -(currentOrientation[1] - neutralOrientation[1])
+    differenceG = (currentOrientation[2] - neutralOrientation[2])
+
     # Normalize the difference to the range of -180 to 180 degrees
-    difference = (difference + 180) % 360 - 180
-    
-    if -90 <= difference <= 90:
-        control_value = difference / 90.0  # Scale to -1 to 1
+    differenceA = (differenceA + 180) % 360 - 180
+    # differenceB = (differenceB + 180) % 360 - 180
+    differenceG = (differenceG + 180) % 360 - 180
+
+    if -90 <= differenceA <= 90:
+        aileron = differenceA / 90.0  # Scale to -1 to 1
     else:
         # Clamp to -1 or 1 if outside ±90 degrees
-        control_value = -1 if difference < -90 else 1
-    
-    print(control_value)
-    control = [control_value, 0, 0]
+        aileron = -1 if differenceA < -90 else 1
+
+
+    if -60 <= differenceG <= 60:
+        elevator = differenceG / 60.0  # Scale to -1 to 1
+    else:
+        # Clamp to -1 or 1 if outside ±60 degrees
+        elevator = -1 if differenceG < -60 else 1
+
+
+
+    # rudder = differenceB
+
+
+
+    print(aileron)
+
+
+    control = [aileron, 0, elevator]
     ctrlsEventPipe.parent_send(control)
+    previousCtrl = control
     return ' '
 
 
 
 def ctrlSend(ctrlsData, eventPipe):
+    global previousCtrl
     if eventPipe.child_poll():
         orientation = eventPipe.child_recv()
     else:
         orientation = (0, 0, 0)
 
-    print()
-    print(neutralOrientation)
-    print(orientation)
-    print(orientation[0])
-    print()
     ctrlsData.aileron = orientation[0]
+    ctrlsData.elevator = orientation[2]
+    # ctrlsData.rudder = orientation[2]
 
     return ctrlsData
 

@@ -48,20 +48,20 @@ def data(a, b, g):
     aileron = 0
     elevator = 0
 
-    differenceA = -(currentOrientation[0] - neutralOrientation[0])
-    # differenceB = -(currentOrientation[1] - neutralOrientation[1])
+    differenceA = (currentOrientation[0] - neutralOrientation[0])
+    differenceB = (currentOrientation[1] - neutralOrientation[1])
     differenceG = (currentOrientation[2] - neutralOrientation[2])
 
     # Normalize the difference to the range of -180 to 180 degrees
     differenceA = (differenceA + 180) % 360 - 180
-    # differenceB = (differenceB + 180) % 360 - 180
+    differenceB = (differenceB + 180) % 360 - 180
     differenceG = (differenceG + 180) % 360 - 180
 
     if -90 <= differenceA <= 90:
-        aileron = differenceA / 90.0  # Scale to -1 to 1
+        aileron = differenceB / 90.0  # Scale to -1 to 1
     else:
         # Clamp to -1 or 1 if outside ±90 degrees
-        aileron = -1 if differenceA < -90 else 1
+        aileron = -1 if differenceB < -90 else 1
 
 
     if -60 <= differenceG <= 60:

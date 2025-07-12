@@ -57,18 +57,18 @@ def data(a, b, g):
     differenceB = (differenceB + 180) % 360 - 180
     differenceG = (differenceG + 180) % 360 - 180
 
-    if -90 <= differenceA <= 90:
+    if -90 <= differenceB <= 90:
         aileron = differenceB / 90.0  # Scale to -1 to 1
     else:
         # Clamp to -1 or 1 if outside ±90 degrees
         aileron = -1 if differenceB < -90 else 1
 
 
-    if -60 <= differenceG <= 60:
-        elevator = differenceG / 60.0  # Scale to -1 to 1
+    if -90 <= differenceG <= 90:
+        elevator = differenceG / 90.0  # Scale to -1 to 1
     else:
         # Clamp to -1 or 1 if outside ±60 degrees
-        elevator = -1 if differenceG < -60 else 1
+        elevator = -1 if differenceG < -90 else 1
 
 
 

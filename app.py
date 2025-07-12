@@ -22,7 +22,9 @@ currentOrientation = (0, 0, 0)
 firstData = True
 
 
-previousCtrl = []
+global previousCtrl
+previousCtrl = [0, 0, 0]
+
 
 @app.route('/')
 def index():
@@ -88,9 +90,9 @@ def ctrlSend(ctrlsData, eventPipe):
     global previousCtrl
     if eventPipe.child_poll():
         orientation = eventPipe.child_recv()
+        previousCtrl = orientation
     else:
-        orientation = (0, 0, 0)
-
+        orientation = previousCtrl
     ctrlsData.aileron = orientation[0]
     ctrlsData.elevator = orientation[2]
     # ctrlsData.rudder = orientation[2]

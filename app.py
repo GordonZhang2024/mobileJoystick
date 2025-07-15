@@ -3,7 +3,6 @@
 from flask import Flask, render_template
 from flask_cors import CORS
 from flightgear_python.fg_if import CtrlsConnection
-from socket import gethostbyname, gethostname
 
 DEBUG = True
 

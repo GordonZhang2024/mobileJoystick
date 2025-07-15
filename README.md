@@ -1,5 +1,11 @@
 # FlightGear mobileJoystick
-**... in development, not usable yet**
+
+## Introduction
+A simple web app,
+enabling users to control FlightGear with mobile devices,
+providing a low-cost alternative to joysticks.
+
+
 
 ## Install
 requirements: python, python-pip
@@ -13,5 +19,5 @@ $ ./app.py
 ```
 
 ## Contact
-- Email: GordonZhang11@outlook.com
+- Email: GordonZhang11 _at_ outlook _dot_ com
 - FlightGear Forum: GZhang

@@ -4,14 +4,13 @@ from flask import Flask, render_template
 from flask_cors import CORS
 from flightgear_python.fg_if import CtrlsConnection
 from socket import gethostbyname, gethostname
-from time import sleep
 
 DEBUG = True
 
 app = Flask(__name__)
 CORS(app)
 
-neutralOrientation = (0, 0, 0) # First init it to disable some warnings
+neutralOrientation = (0, 0, 0)  # First init it to disable some warnings
 currentOrientation = (0, 0, 0)
 
 
@@ -26,31 +25,29 @@ global previousCtrl
 previousCtrl = [0, 0, 0]
 
 
-@app.route('/')
+@app.route("/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
 
 
-@app.route('/data/<a>/<b>/<g>')   # Motion data Alpha Beta Gamma
+@app.route("/data/<a>/<b>/<g>")  # Motion data Alpha Beta Gamma
 def data(a, b, g):
     global firstData, neutralOrientation, currentOrientation
     a, b, g = float(a), float(b), float(g)
     if firstData:
         neutralOrientation = [a, b, g]
-        print('FD')
+        print("FD")
         firstData = False
     currentOrientation = [a, b, g]
     global ctrlsEventPipe
     global previousCtrl
 
-
-
     aileron = 0
     elevator = 0
 
-    differenceA = (currentOrientation[0] - neutralOrientation[0])
-    differenceB = (currentOrientation[1] - neutralOrientation[1])
-    differenceG = (currentOrientation[2] - neutralOrientation[2])
+    differenceA = currentOrientation[0] - neutralOrientation[0]
+    differenceB = currentOrientation[1] - neutralOrientation[1]
+    differenceG = currentOrientation[2] - neutralOrientation[2]
 
     # Normalize the difference to the range of -180 to 180 degrees
     differenceA = (differenceA + 180) % 360 - 180
@@ -63,27 +60,20 @@ def data(a, b, g):
         # Clamp to -1 or 1 if outside ±90 degrees
         aileron = -1 if differenceB < -90 else 1
 
-
     if -90 <= differenceG <= 90:
         elevator = differenceG / 90.0  # Scale to -1 to 1
     else:
         # Clamp to -1 or 1 if outside ±60 degrees
         elevator = -1 if differenceG < -90 else 1
 
-
-
     # rudder = differenceB
 
-
-
     print(aileron)
-
 
     control = [aileron, 0, elevator]
     ctrlsEventPipe.parent_send(control)
     previousCtrl = control
-    return ' '
-
+    return " "
 
 
 def ctrlSend(ctrlsData, eventPipe):
@@ -99,11 +89,11 @@ def ctrlSend(ctrlsData, eventPipe):
 
     return ctrlsData
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     ctrlsConn = CtrlsConnection()
-    ctrlsEventPipe = ctrlsConn.connect_rx('localhost', 5503, ctrlSend)
-    ctrlsConn.connect_tx('localhost', 5504)
+    ctrlsEventPipe = ctrlsConn.connect_rx("localhost", 5503, ctrlSend)
+    ctrlsConn.connect_tx("localhost", 5504)
     ctrlsConn.start()
 
-    app.run('0.0.0.0', 5000, debug=True)
-
+    app.run("0.0.0.0", 5000, debug=True)
